@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="OMP-ServiceEngine" basedir="." default="create.jarfile">
+
+	<!--
+		Service Engine
+	-->
+	<property name="name" value="mybatis-jr-plugin"/>
+	<property name="version" value="3.1.2-SNAPSHOT"/>
+	<property name="plugin-lib" value="${name}-${version}.jar"/>
+
+	<property name="src.dir" value="src"/>
+	<property name="build.dir" value="build"/>
+	<property name="dist.dir" value="dist"/>
+	<property name="lib.dir" value="lib"/>
+
+	<path id="master-classpath">
+		<fileset dir="${lib.dir}">
+		    <include name="*.jar"/>
+		</fileset>
+	</path>
+
+    <target name="usage">
+		<echo message=""/>
+		<echo message="jrebel dal plugin build"/>
+		<echo message="------------------------------------------------------"/>
+		<echo message=""/>
+		<echo message="Available targets are:"/>
+		<echo message=""/>
+		<echo message="clean    --> Clean output dirs"/>
+		<echo message="build    --> Compile main Java sources and copy libraries"/>
+		<echo message="docs     --> Create complete Javadoc documentation"/>
+		<echo message="all      --> Clean, build, docs"/>
+		<echo message="dist     --> Create complete ServiceEngine Distrtibution File"/>
+		<echo message=""/>
+    </target>
+
+
+	<target name="clean" description="Clean output dirs (build, dist)">
+		<delete dir="${build.dir}"/>
+		<delete dir="${dist.dir}"/>
+	</target>
+
+	<!-- =================================
+          Compile the main, sample soure trees.
+         ================================= -->
+    <target name="build" depends="build_main" description="Compile all source files." />
+
+    <target name="initdist">
+    	<mkdir dir="${dist.dir}"/>
+    </target>
+
+	<!--
+		Compile and build Service Engine Core.
+	-->
+	<target name="build_main" depends="initdist" description="Compile main source tree java files into class files, generate jar files">
+		<mkdir dir="${build.dir}/classes"/>
+		<javac destdir="${build.dir}/classes" source="1.5" target="1.5"
+			 debug="true" deprecation="false" optimize="false" failonerror="true">
+			<src path="${src.dir}"/>
+			<classpath refid="master-classpath"/>
+		</javac>
+	</target>
+
+	<target name="create.jarfile" depends="build" description="Build the UCMP-OMP Common archive">
+		<delete file="${dist.dir}/${plugin-lib}"/>
+		<manifest file="src/META-INF/MANIFEST.MF">
+				<attribute name="Manifest-Version" value="1.0" />
+				<attribute name="Archiver-Version" value="Plexus Archiver" />
+				<attribute name="JavaRebel-Plugin" value="org.zeroturnaround.jrebel.mybatis.MybatisPlugin" />
+		</manifest>
+		<jar jarfile="${dist.dir}/${plugin-lib}" compress="true" basedir="${build.dir}/classes" manifest="src/META-INF/MANIFEST.MF" />
+	</target>
+</project>
