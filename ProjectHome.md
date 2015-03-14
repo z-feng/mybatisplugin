@@ -1,0 +1,1 @@
+It is a jrebel plugin project.It supports mybatis3.0.1 GA.
